@@ -1,0 +1,57 @@
+Just delete docs folder from apps 
+and create http-server and ws-server
+
+Next how to start all three on pnpm run build:
+
+
+----------------------------------------
+We do create page.tsx in our app folders
+and create basic components inside packages because that is a good practice 
+and then monorepo provides us that we dont reed to import them via relative path we can directly import them
+using @repo/ui directly and also add that in package.json of ui folder and add that in export section 
+
+Okay lets simplify this give it two minutes to process :
+Simply think we created a monorepo : npx create-turbo@latest
+which ask you directory : you gave a name
+then asks : npm , pnpm or something else
+
+then what happens:
+it comes to package.json in the directory and see this line there "build": "turbo run build",
+which runs when we do npx run build in terminal 
+then as it defines turbo run build so we direct to turbo.json file now :
+
+where there are 3 lines in build part others parts are easily understandable :
+
+"build": {
+      "dependsOn": ["^build"],  
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+},
+
+
+dependson : tells us about the dependency graph what needs to be developed before the other thing we build like ui components need to be build before apps folder as they are required
+means turborepo maintains a Directed acyclic graph of dependecies in the project over each other and build them in the topological order .
+
+inputs :
+what are the inputs this says what are the inputs do i have to build it from scratch or pick it from cache
+if anything changes in both turbo_defaults(contains almost all are folder files if we expand it it contain "./app/* , ./packages/*) like these  and .env file we need to build it again otherwise pick directly from .next folder the cache 
+
+one more thing
+ in a node.js project if .env is changed then re build it again is neccessary 
+ but not in a next.js project it is not required to build it again everytime so we can remove it from inputs
+ 
+
+Why so ??
+
+
+
+
+outputs:
+first time when we build the .next folder is generated and saved in remote cloud place and whenever we again do 
+build it picks it from remote cache which led to efficient build 
+and second part says dont cache anything inside next/cache folder leave it .
+
+if we need to define what to build for a particular
+folder then define a overwrite turbo.json file which is updated.
+
+
